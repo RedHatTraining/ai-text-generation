@@ -139,3 +139,15 @@ cython_debug/
 
 dataset.csv
 model.torch
+
+
+# Extension
+out/
+node_modules/
+
+# Editor
+.vscode
+
+# Training
+.output
+runs

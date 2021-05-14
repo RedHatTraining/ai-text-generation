@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+#https://github.com/huggingface/transformers/tree/master/examples/pytorch/language-modeling
+
+python train_clm.py \
+    --model_name_or_path gpt2 \
+    --train_file dataset_train.txt \
+    --validation_file dataset_validation.txt \
+    --do_train \
+    --do_eval \
+    --use_fast_tokenizer \
+    --overwrite_output_dir \
+    --output_dir .output \
+    --per_device_eval_batch_size 20 \
+    --per_device_train_batch_size 5 \
+    --num_train_epochs 2
