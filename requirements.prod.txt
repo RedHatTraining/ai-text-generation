@@ -1,0 +1,2 @@
+sanic==20.12.3
+transformers==4.6.0

@@ -150,4 +150,5 @@ node_modules/
 
 # Training
 .output
+.model
 runs

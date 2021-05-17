@@ -40,37 +40,33 @@ async function getCompletionsListItemsFor(
 	position: vscode.Position
 ): Promise<vscode.CompletionItem[]> {
 
-	const CHAR_LIMIT = 1000;
-	const offset = document.offsetAt(position);
-    const beforeStartOffset = Math.max(0, offset - CHAR_LIMIT);
+	const config = vscode.workspace.getConfiguration("rht-text-generator");
+	const MAX_LINES: number = config.get("lines") || 3;
+	const lines = [];
 
-    // const afterEndOffset = offset + CHAR_LIMIT;
-    // const beforeStart = document.positionAt(beforeStartOffset);
-    // const afterEnd = document.positionAt(afterEndOffset);
+	for (let lineOffset = 0; lineOffset < MAX_LINES; lineOffset++ ) {
+		const lineNumber = Math.max(0, position.line - lineOffset);
+		const line = document.lineAt(lineNumber).text.trimEnd();
+		lines.unshift(line);
+	}
+	const text = lines.join("\n");
 
-	// const line = document.lineAt(position.line).text.trim();
-	const line = document.getText(
-		new vscode.Range(
-			document.positionAt(beforeStartOffset),
-			document.positionAt(offset)
-		)
-	);
+	const predictionLength: number = config.get("length") || 3;
 
-	const predictionLength = 3;
-
-	let suggestions: string[] = await generateSuggestions(line, predictionLength);
+	const server: string = config.get("server") || "";
+	let suggestions: string[] = await generateSuggestions(text, predictionLength, server);
 
 	return suggestions.map(suggestion => {
-		const tail = suggestion.replace(line, "").trim();
+		const tail = suggestion.replace(text, "").trim();
 		return new vscode.CompletionItem(tail);
 	});
 }
 
-async function generateSuggestions(line: string, predictionLength: number) {
+async function generateSuggestions(line: string, predictionLength: number, server: string) {
 	let suggestions: string[] = [];
 	try {
 		const response = await Axios.get<[string]>(
-			`http://localhost:8000/?text=${line}&length=${predictionLength}`
+			`http://${server}/?text=${line}&length=${predictionLength}`
 		);
 		suggestions = response.data;
 	} catch (error) {

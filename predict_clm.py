@@ -1,4 +1,3 @@
-from pprint import pprint
 from transformers import pipeline, set_seed
 
 TEXT = "=== Identifying the Need"

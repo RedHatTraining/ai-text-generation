@@ -36,7 +36,10 @@ sections = []
 
 # Find adoc files
 home = str(Path.home())
-coursedir = os.path.join(home, "Desarrollo")
+coursedir = os.environ.get(
+    "COURSE_DIR",
+    os.path.join(home, "Desarrollo", "courses"))
+
 
 for dirpath, dnames, fnames in os.walk(coursedir):
     for f in fnames:
