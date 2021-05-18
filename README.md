@@ -4,18 +4,13 @@ Tool to assist developers when writing courses.
 
 ## Usage
 
-1. Build the model server image:
-
-    podman build . -t rht-text-generator
-
 2. Run the container:
 
-    podman run --rm -ti -p 8482:8000 rht-text-generator
+    podman run --rm -ti -p 8482:8000 quay.io/jramcast/text-generator
 
-3. Install the extension:
+3. Install the extension in VSCode
 
-
-
+    code --install-extension extension/rht-text-generator/rht-text-generator-0.0.1.vsix
 
 ## Retrain the model
 
@@ -26,3 +21,11 @@ Tool to assist developers when writing courses.
 2. Train:
 
     ./train
+
+## Rebuild the model server image
+
+    podman build . -t text-generator
+
+## Publish the image
+
+    podman push quay.io/jramcast/text-generator

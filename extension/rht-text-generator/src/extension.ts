@@ -15,7 +15,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.languages.registerCompletionItemProvider(
-			{ pattern: "**"},
+			[{ language: "asciidoc"}, { language: "markdown" }],
 			provider,
 			...COMPLETION_TRIGGERS
 		)

@@ -7,7 +7,11 @@
 
 2. Run the container:
 
-    podman run --rm -ti -p 8482:8000 rht-text-generator
+    podman run --rm -ti -p 8482:8000 quay.io/jramcast/text-generator
+
+3. Package the extension:
+
+    npx vsce package
 
 3. Install the extension:
 
