@@ -6,7 +6,7 @@ Tool to assist developers when writing courses.
 
 2. Run the container:
 
-    podman run --rm -ti -p 8482:8000 quay.io/jramcast/text-generator
+    podman run --rm -ti -p 8482:8482 quay.io/jramcast/text-generator
 
 3. Install the extension in VSCode
 

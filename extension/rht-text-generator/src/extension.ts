@@ -6,6 +6,8 @@ import { exec } from "child_process";
 import { COMPLETION_TRIGGERS } from "./triggers";
 
 
+const leadingSpacesRegex = /^[^\S\r\n]+/;
+
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -41,25 +43,32 @@ async function getCompletionsListItemsFor(
 ): Promise<vscode.CompletionItem[]> {
 
 	const config = vscode.workspace.getConfiguration("rht-text-generator");
-	const MAX_LINES: number = config.get("lines") || 3;
-	const lines = [];
-
-	for (let lineOffset = 0; lineOffset < MAX_LINES; lineOffset++ ) {
-		const lineNumber = Math.max(0, position.line - lineOffset);
-		const line = document.lineAt(lineNumber).text.trimEnd();
-		lines.unshift(line);
-	}
-	const text = lines.join("\n");
+	const text = getText(document, position);
 
 	const predictionLength: number = config.get("length") || 3;
 
 	const server: string = config.get("server") || "";
 	let suggestions: string[] = await generateSuggestions(text, predictionLength, server);
 
-	return suggestions.map(suggestion => {
-		const tail = suggestion.replace(text, "").trim();
-		return new vscode.CompletionItem(tail);
-	});
+	return suggestions.map((suggestion, idx) => {
+		const item = new vscode.CompletionItem(suggestion.replace(leadingSpacesRegex, ""));
+		item.sortText = idx.toString();
+		return item;
+	}).filter(item => item.label.trim().length > 0);
+}
+
+/**
+ * Get the text from the current position back to a specific number of lines
+ */
+function getText(document: vscode.TextDocument, position: vscode.Position): string  {
+	const config = vscode.workspace.getConfiguration("rht-text-generator");
+	const MAX_LINES: number = config.get("lines") || 3;
+	const currentLineNumber = position.line;
+	const rangeEnd = position;
+	const rangeStartLine = Math.max(0, currentLineNumber - MAX_LINES);
+	const rangeStart = new vscode.Position(rangeStartLine, 0);
+	const text = document.getText(new vscode.Range(rangeStart, rangeEnd));
+	return text;
 }
 
 async function generateSuggestions(line: string, predictionLength: number, server: string) {

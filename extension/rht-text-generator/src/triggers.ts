@@ -4,7 +4,6 @@ export const COMPLETION_TRIGGERS = [
     ",",
     ";",
     "-",
-    "\n",
     "(",
     ")",
     "{",

@@ -44,7 +44,7 @@
 			"properties": {
 				"rht-text-generator.lines": {
 					"type": "number",
-					"default": 3,
+					"default": 5,
 					"description": "Number of lines to pass to the model"
 				},
 				"rht-text-generator.length": {

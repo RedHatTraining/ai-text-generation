@@ -8,6 +8,6 @@ RUN pip install --upgrade pip && \
 COPY .model .model
 COPY serve.py .
 
-EXPOSE 8000
+EXPOSE 8482
 
 CMD ["python", "serve.py"]

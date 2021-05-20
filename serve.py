@@ -1,4 +1,3 @@
-from pprint import pprint
 from sanic import Sanic
 from sanic.response import json
 from transformers import pipeline, set_seed, GPT2Tokenizer
@@ -18,16 +17,16 @@ async def test(request):
     num_predicted_tokens = int(request.args.get("length", 3))
     no_topp = request.args.get("no_top", False)
 
-    num_tokens = tokenizer(text, return_length=True)["length"]
+    tokens = tokenizer(text, return_length=True)
+    num_tokens = tokens["length"]
     max_length = num_tokens + num_predicted_tokens
-
-    print("Text:", text)
 
     kargs = {
         "do_sample": True,
         "top_k": max_length,
-        "top_p": 0.9
+        "top_p": 0.92
     }
+
     if no_topp:
         kargs = {}
 
@@ -35,15 +34,17 @@ async def test(request):
     predictions = generator(
         text,
         max_length=max_length,
-        num_return_sequences=4,
+        num_return_sequences=5,
+        output_scores=True,
+        return_full_text=False,
         **kargs
     )
 
     result = [p["generated_text"] for p in predictions]
 
-    pprint(result)
+    print("Predictions:", result)
 
     return json(result)
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0")
+    app.run(host="0.0.0.0", port=8482)
