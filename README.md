@@ -1,6 +1,6 @@
 # Text Generator
 
-AI writing assistant.
+AI writing assistant (prototype).
 
 ## Usage
 
