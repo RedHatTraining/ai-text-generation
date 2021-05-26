@@ -1,6 +1,6 @@
-# RHT Text Generator
+# Text Generator
 
-Tool to assist developers when writing courses.
+AI writing assistant.
 
 ## Usage
 
