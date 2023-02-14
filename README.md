@@ -6,7 +6,7 @@ AI writing assistant (prototype).
 
 2. Run the container:
 
-    podman run --rm -ti -p 8482:8482 quay.io/jramcast/text-generator
+    podman run --rm -ti -p 8482:8482 quay.io/redhattraining/ai-text-generator
 
 3. Install the extension in VSCode
 
@@ -24,8 +24,8 @@ AI writing assistant (prototype).
 
 ## Rebuild the model server image
 
-    podman build . -t text-generator
+    podman build . -t quay.io/redhattraining/ai-text-generator
 
 ## Publish the image
 
-    podman push quay.io/jramcast/text-generator
+    podman push quay.io/redhattraining/ai-text-generator
