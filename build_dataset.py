@@ -1,10 +1,7 @@
 import os
 import re
-from pathlib import Path
-import pandas as pd
 import random
-
-from sklearn.utils import validation
+from pathlib import Path
 
 
 TRAIN_PATH = "data/dataset_train.txt"
@@ -38,14 +35,19 @@ sections = []
 home = str(Path.home())
 coursedir = os.environ.get(
     "COURSE_DIR",
-    os.path.join(home, "Desarrollo", "courses"))
+    os.path.join(home, "courses"))
 
 
 for dirpath, dnames, fnames in os.walk(coursedir):
     for f in fnames:
-        if (f.endswith(".adoc") and
-            "guides" in dirpath and
-                "en-US" in dirpath):
+
+        is_adoc = f.endswith(".adoc")
+        in_content_dir = "content" in dirpath and "translations" not in dirpath
+        in_guides_dir = "guides" in dirpath and "en-US" in dirpath
+        in_tmp = "guides/tmp" in dirpath
+        in_cache = ".cache" in dirpath
+
+        if is_adoc and (in_content_dir or in_guides_dir) and not in_tmp and not in_cache:
             filepath = os.path.join(dirpath, f)
             print(filepath)
             with open(filepath, "r") as f:
