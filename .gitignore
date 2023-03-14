@@ -151,4 +151,5 @@ node_modules/
 # Training
 .output
 .model
+checkpoint-*
 runs
