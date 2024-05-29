@@ -2,8 +2,9 @@
 	"name": "rht-text-generator",
 	"displayName": "rht-text-generator",
 	"publisher": "red-hat-training",
-	"description": "",
-	"version": "0.0.1",
+	"description": "VSCode RHT extension for writting suggestions",
+	"repository": "https://github.com/RedHatTraining/ai-text-generation",
+	"version": "0.0.2",
 	"engines": {
 		"vscode": "^1.55.0"
 	},
@@ -11,7 +12,10 @@
 		"Other"
 	],
 	"activationEvents": [
-		"*"
+		"onLanguage:asciidoc",
+		"onLanguage:latex",
+		"onLanguage:markdown",
+		"onLanguage:plaintext"
 	],
 	"main": "./out/extension.js",
 	"scripts": {

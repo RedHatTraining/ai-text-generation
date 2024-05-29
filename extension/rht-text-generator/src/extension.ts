@@ -17,7 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.languages.registerCompletionItemProvider(
-			[{ language: "asciidoc"}],
+			[{ language: "asciidoc" }, { language: "latex" }, { language: "markdown" }, { language: "plaintext" }],
 			provider,
 			...COMPLETION_TRIGGERS
 		)
@@ -60,7 +60,7 @@ async function getCompletionsListItemsFor(
 /**
  * Get the text from the current position back to a specific number of lines
  */
-function getText(document: vscode.TextDocument, position: vscode.Position): string  {
+function getText(document: vscode.TextDocument, position: vscode.Position): string {
 	const config = vscode.workspace.getConfiguration("rht-text-generator");
 	const MAX_LINES: number = config.get("lines") || 3;
 	const currentLineNumber = position.line;

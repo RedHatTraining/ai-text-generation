@@ -10,7 +10,7 @@ AI writing assistant (prototype).
 
 3. Install the extension in VSCode
 
-    code --install-extension extension/rht-text-generator/rht-text-generator-0.0.1.vsix
+    code --install-extension extension/rht-text-generator/rht-text-generator-0.0.2.vsix
 
 ## Retrain the model
 
