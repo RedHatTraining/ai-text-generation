@@ -1,0 +1,12 @@
+FROM quay.io/modh/runtime-images:runtime-minimal-ubi9-python-3.9-20240614
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+COPY runtime.py .
+
+ENV MODEL_PATH=/mnt/models/
+EXPOSE 8000
+
+CMD ["fastapi", "run", "runtime.py"]
