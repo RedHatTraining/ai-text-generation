@@ -153,3 +153,5 @@ node_modules/
 .model
 checkpoint-*
 runs
+
+_model
