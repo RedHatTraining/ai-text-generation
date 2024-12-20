@@ -1,0 +1,26 @@
+[project]
+name = "ai-text-generation"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "accelerate>=1.2.1",
+    "datasets>=3.2.0",
+    "evaluate>=0.4.3",
+    "scikit-learn>=1.6.0",
+    "torch>=2.5.1",
+    "torchvision>=0.20.1",
+    "transformers>=4.47.1",
+]
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu", marker = "platform_system != 'Darwin'" }]
+torchvision = [
+    { index = "pytorch-cpu", marker = "platform_system != 'Darwin'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
