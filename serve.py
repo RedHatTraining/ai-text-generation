@@ -1,14 +1,14 @@
 from sanic import Sanic
 from sanic.response import json
-from transformers import pipeline, set_seed, GPT2Tokenizer
+from transformers import pipeline, set_seed, AutoTokenizer
 
 
 set_seed(42)
-tokenizer = GPT2Tokenizer.from_pretrained('.model')
+tokenizer = AutoTokenizer.from_pretrained('.model')
 generator = pipeline('text-generation', model='.model')
 
 
-app = Sanic("RH Curriculum writing assistant")
+app = Sanic("PTL-writing-assistant")
 
 
 @app.route("/")
@@ -18,7 +18,7 @@ async def test(request):
     no_topp = request.args.get("no_top", False)
 
     tokens = tokenizer(text, return_length=True)
-    num_tokens = tokens["length"]
+    num_tokens = tokens["length"][0]
     max_length = num_tokens + num_predicted_tokens
 
     kargs = {
