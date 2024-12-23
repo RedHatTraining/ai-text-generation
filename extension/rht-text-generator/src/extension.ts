@@ -73,10 +73,12 @@ function getText(document: vscode.TextDocument, position: vscode.Position): stri
 
 async function generateSuggestions(line: string, predictionLength: number, server: string) {
 	let suggestions: string[] = [];
+	const body = { text: line, length: predictionLength };
+
 	try {
-		const response = await Axios.get<[string]>(
-			`http://${server}/?text=${line}&length=${predictionLength}`
-		);
+		console.log(line);
+		console.log(predictionLength);
+		const response = await Axios.post<[string]>(`http://${server}/`, body);
 		suggestions = response.data;
 	} catch (error) {
 		if (error.response) {

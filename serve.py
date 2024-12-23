@@ -11,11 +11,13 @@ generator = pipeline('text-generation', model='.model')
 app = Sanic("PTL-writing-assistant")
 
 
-@app.route("/")
+@app.post("/")
 async def test(request):
-    text = request.args.get("text", "")
-    num_predicted_tokens = int(request.args.get("length", 3))
-    no_topp = request.args.get("no_top", False)
+
+    data = request.json
+    text = data["text"]
+    num_predicted_tokens = int(data.get("length", 3))
+    no_topp = data.get("no_top", False)
 
     tokens = tokenizer(text, return_length=True)
     num_tokens = tokens["length"][0]
