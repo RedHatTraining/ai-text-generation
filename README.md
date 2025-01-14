@@ -20,7 +20,7 @@ AI writing assistant (prototype).
 
 2. Train:
 
-    ./train
+    
 
 ## Rebuild the model server image
 
