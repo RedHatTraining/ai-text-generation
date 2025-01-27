@@ -1,17 +1,33 @@
+import random
 from transformers import pipeline, set_seed
+from transformers import logging as transformers_logging
 
-TEXT = "=== Identifying the Need"
-wordcount = len(TEXT.split())
+# Suppress warning messages
+transformers_logging.set_verbosity_error()
+
+prompt = "To list all the pods in an OpenShift project"
+max_input_chars = 500
+wordcount = len(prompt.split())
+
 
 # generator = pipeline('text-generation', model='gpt2')
-generator = pipeline('text-generation', model='.output/')
+generator = pipeline(
+    "text-generation", model=".model/", do_sample=True, temperature=0.8
+)
 set_seed(42)
-predictions = generator("Correct any reported",
-                        max_length=wordcount + 3, num_return_sequences=5)
 
-for p in predictions:
-    print()
-    print("-" * 100)
-    print(p["generated_text"])
-    print("-" * 100)
-    print()
+
+def generate(text: str):
+    predictions = generator(text, max_new_tokens=3, num_return_sequences=3)
+    return predictions[random.choice([0, 1, 2])]["generated_text"]
+
+
+print(prompt, end=None)
+
+while True:
+    input = prompt[-max_input_chars:]
+    generated = generate(input)
+    print(generated.replace(input, ""), end="", flush=True)
+    # print(generated)
+    # print("--" * 50)
+    prompt = generated

@@ -8,25 +8,28 @@ TRAIN_PATH = "data/dataset_train.txt"
 VALIDATION_PATH = "data/dataset_validation.txt"
 
 
-def parse_sections(f):
-    sections = []
+def parse_section(f):
+    clean_lines = []
     for line in f:
-        line = line.rstrip()
+
+        line = line.rstrip().replace(":gls_prefix:", "")
 
         if (line.startswith("//")
             or line.startswith("ifndef")
                 or line.startswith(":experiment")):
             continue
 
-        if re.match(r"^=+ \w+", line):
-            sections.append(line)
-        else:
-            try:
-                sections[-1] += "\n" + line
-            except IndexError:
-                pass
+        clean_lines.append(line)
 
-    return sections
+        # if re.match(r"^=+ \w+", line):
+        #     sections.append(line)
+        # else:
+        #     try:
+        #         sections[-1] += "\n" + line
+        #     except IndexError:
+        #         pass
+
+    return "\n".join(clean_lines)
 
 
 sections = []
@@ -51,14 +54,14 @@ for dirpath, dnames, fnames in os.walk(coursedir):
             filepath = os.path.join(dirpath, f)
             print(filepath)
             with open(filepath, "r") as f:
-                sections += parse_sections(f)
+                sections.append(parse_section(f))
 
 random.Random(42).shuffle(sections)
 num_sections = len(sections)
 train_size = int(num_sections * 0.8)
 
 with open(TRAIN_PATH, "w") as f:
-    f.write("\n".join(sections[:train_size]))
+    f.write("\n<|endoftext|>\n".join(sections[:train_size]))
 
 with open(VALIDATION_PATH, "w") as f:
-    f.write("\n".join(sections[train_size:]))
+    f.write("\n<|endoftext|>\n".join(sections[train_size:]))
