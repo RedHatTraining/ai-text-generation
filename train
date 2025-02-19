@@ -2,19 +2,26 @@
 
 #https://github.com/huggingface/transformers/tree/master/examples/pytorch/language-modeling
 
-MODEL=gpt2
+MODEL=HuggingFaceTB/SmolLM-135M
 
 python train_clm.py \
     --model_name_or_path ${MODEL} \
+    --tokenizer_name ./fim_smol_tokenizer \
     --train_file data/dataset_train.txt \
     --validation_file data/dataset_validation.txt \
     --do_train \
     --do_eval \
     --use_fast_tokenizer \
     --overwrite_output_dir \
-    --output_dir .models/$(date '+%Y-%m-%d_%H-%M')_${MODEL} \
-    --per_device_eval_batch_size 20 \
-    --per_device_train_batch_size 5 \
+    --output_dir models/fim_smollm_finetuned_$(date '+%Y-%m-%d_%H-%M-%S') \
+    --per_device_eval_batch_size 16 \
+    --per_device_train_batch_size 16 \
+    --max_train_samples 2000000000 \
+    --max_eval_samples 1000000000 \
     --num_train_epochs 10 \
-    --block_size 256 \
-    --save_steps 2000
+    --metric_for_best_model eval_loss \
+    --block_size 512 \
+    --eval_strategy steps \
+    --load_best_model_at_end \
+    --logging_steps 5 \
+    --save_steps 500
