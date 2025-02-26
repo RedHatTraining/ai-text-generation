@@ -4,7 +4,7 @@
 	"publisher": "red-hat-training",
 	"description": "VSCode RHT extension for writting suggestions",
 	"repository": "https://github.com/RedHatTraining/ai-text-generation",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"engines": {
 		"vscode": "^1.55.0"
 	},
@@ -51,7 +51,7 @@
 					"default": 5,
 					"description": "Number of lines to pass to the model"
 				},
-				"rht-text-generator.length": {
+				"rht-text-generator.maxTokens": {
 					"type": "number",
 					"default": 3,
 					"description": "Number of words(tokens) to generate. Higher is slower"
@@ -60,6 +60,26 @@
 					"type": "string",
 					"default": "localhost:8482",
 					"description": "Model server"
+				},
+				"rht-text-generator.api": {
+					"type": "string",
+					"default": "openai",
+					"description": "API type"
+				},
+				"rht-text-generator.model": {
+					"type": "string",
+					"default": "granite-8b-code-instruct-128k",
+					"description": "Model name"
+				},
+				"rht-text-generator.apiKey": {
+					"type": "string",
+					"default": "",
+					"description": "API Key"
+				},
+				"rht-text-generator.promptTemplate": {
+					"type": "string",
+					"default": "{{{prefix}}}",
+					"description": "The format of the prompt sent to the model"
 				}
 			}
 		}

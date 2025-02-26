@@ -41,26 +41,41 @@ async function getCompletionsListItemsFor(
 	document: vscode.TextDocument,
 	position: vscode.Position
 ): Promise<vscode.CompletionItem[]> {
+	const outputTab = vscode.window.createOutputChannel('rht-text-generator');
 
-	const config = vscode.workspace.getConfiguration("rht-text-generator");
-	const text = getText(document, position);
 
-	const predictionLength: number = config.get("length") || 3;
+	const prompt = generatePrompt(document, position);
+	outputTab.appendLine("%%%%%%%%%%%%%%%%%%%%%% PROMPT %%%%%%%%%%%%%%%%%%%%%%");
+	outputTab.appendLine(prompt);
+	outputTab.appendLine("%%%%%%%%%%%%%%%%%%%%%% /PROMPT %%%%%%%%%%%%%%%%%%%%%%");
 
-	const server: string = config.get("server") || "";
-	let suggestions: string[] = await generateSuggestions(text, predictionLength, server);
+	outputTab.appendLine("%%%%%%%%%%%%%%%%%%%%%% SUGGESTIONS %%%%%%%%%%%%%%%%%%%%%%");
+	const suggestions = (await generateSuggestions(prompt))
+		.map((suggestion, idx) => {
+			const item = new vscode.CompletionItem(suggestion.replace(leadingSpacesRegex, ""));
+			item.sortText = idx.toString();
+			outputTab.appendLine(`* ${item.label}`);
+			return item;
+		}).filter(item => item.label.trim().length > 0);
+	outputTab.appendLine("%%%%%%%%%%%%%%%%%%%%%% /SUGGESTIONS %%%%%%%%%%%%%%%%%%%%%%");
 
-	return suggestions.map((suggestion, idx) => {
-		const item = new vscode.CompletionItem(suggestion.replace(leadingSpacesRegex, ""));
-		item.sortText = idx.toString();
-		return item;
-	}).filter(item => item.label.trim().length > 0);
+	return suggestions;
 }
+
+function generatePrompt(document: vscode.TextDocument, position: vscode.Position): string {
+	const config = vscode.workspace.getConfiguration("rht-text-generator");
+	const promptTemplate: string = config.get("promptTemplate") || "{{{prefix}}}";
+	const prefix = getTextPrefix(document, position);
+	const suffix = getTextSuffix(document, position);
+
+	return promptTemplate.replace("{{{prefix}}}", prefix).replace("{{{suffix}}}", suffix);
+}
+
 
 /**
  * Get the text from the current position back to a specific number of lines
  */
-function getText(document: vscode.TextDocument, position: vscode.Position): string {
+function getTextPrefix(document: vscode.TextDocument, position: vscode.Position): string {
 	const config = vscode.workspace.getConfiguration("rht-text-generator");
 	const MAX_LINES: number = config.get("lines") || 3;
 	const currentLineNumber = position.line;
@@ -71,11 +86,82 @@ function getText(document: vscode.TextDocument, position: vscode.Position): stri
 	return text;
 }
 
-async function generateSuggestions(line: string, predictionLength: number, server: string) {
+function getTextSuffix(document: vscode.TextDocument, position: vscode.Position): string {
+	const config = vscode.workspace.getConfiguration("rht-text-generator");
+	const MAX_LINES: number = config.get("lines") || 3;
+	const numLines = Math.floor(MAX_LINES / 3);
+	const rangeStart = position;
+	const rangeEnd = new vscode.Position(position.line + numLines, 0);
+	const text = document.getText(new vscode.Range(rangeStart, rangeEnd));
+	return text;
+}
+
+async function generateSuggestions(text: string) {
+	const config = vscode.workspace.getConfiguration("rht-text-generator");
+	const api: string = config.get("api") || "";
+
+	if (api === "openai") {
+		return await makeRequestToOpenAIAPI(text);
+	}
+
+	return await makeRequestToCustomAPI(text);
+}
+
+async function makeRequestToOpenAIAPI(text: string) {
+	const config = vscode.workspace.getConfiguration("rht-text-generator");
+	const server: string = config.get("server") || "";
+	const maxTokens: number = config.get("maxTokens") || 3;
+	const model: string = config.get("model") || "";
+	const apiKey: string = config.get("apiKey") || "";
+
+	const requestBody = {
+		model,
+		prompt: text,
+		n: 5, // Generate multiple completions
+		max_tokens: maxTokens,
+		temperature: 0.5
+	};
+
+	const headers = {
+		"Content-Type": "application/json",
+		"Authorization": `Bearer ${apiKey}`
+	};
+	const apiURL = `${server}/completions`.replace("//completions", "/completions");
+
+	let suggestions: string[] = [];
+
+	try {
+		const response = await Axios.post(apiURL, requestBody, { headers });
+		suggestions = response.data.choices.map((choice: any) => choice.text);
+	} catch (error) {
+		if (error.response) {
+			// The request was made and the server responded with a status code
+			// that falls out of the range of 2xx
+			console.log(error.response.data);
+			console.log(error.response.status);
+			console.log(error.response.headers);
+		} else if (error.request) {
+			// The request was made but no response was received
+			// `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+			// http.ClientRequest in node.js
+			console.log(error.request);
+		} else {
+			// Something happened in setting up the request that triggered an Error
+			console.log('Error', error.message);
+		}
+	}
+	return suggestions;
+}
+
+async function makeRequestToCustomAPI(text: string) {
+	const config = vscode.workspace.getConfiguration("rht-text-generator");
+	const server: string = config.get("server") || "";
+	const maxTokens: number = config.get("maxTokens") || 3;
+
 	let suggestions: string[] = [];
 	try {
 		const response = await Axios.get<[string]>(
-			`http://${server}/?text=${line}&length=${predictionLength}`
+			`http://${server}/?text=${text}&length=${maxTokens}`
 		);
 		suggestions = response.data;
 	} catch (error) {
@@ -97,3 +183,4 @@ async function generateSuggestions(line: string, predictionLength: number, serve
 	}
 	return suggestions;
 }
+
