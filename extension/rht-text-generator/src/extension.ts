@@ -7,6 +7,7 @@ import { COMPLETION_TRIGGERS } from "./triggers";
 
 
 const leadingSpacesRegex = /^[^\S\r\n]+/;
+let outputTab: vscode.OutputChannel;
 
 
 // this method is called when your extension is activated
@@ -14,6 +15,7 @@ const leadingSpacesRegex = /^[^\S\r\n]+/;
 export function activate(context: vscode.ExtensionContext) {
 
 	const provider: vscode.CompletionItemProvider = { provideCompletionItems };
+	outputTab = vscode.window.createOutputChannel('rht-text-generator');
 
 	context.subscriptions.push(
 		vscode.languages.registerCompletionItemProvider(
@@ -41,9 +43,6 @@ async function getCompletionsListItemsFor(
 	document: vscode.TextDocument,
 	position: vscode.Position
 ): Promise<vscode.CompletionItem[]> {
-	const outputTab = vscode.window.createOutputChannel('rht-text-generator');
-
-
 	const prompt = generatePrompt(document, position);
 	outputTab.appendLine("%%%%%%%%%%%%%%%%%%%%%% PROMPT %%%%%%%%%%%%%%%%%%%%%%");
 	outputTab.appendLine(prompt);
@@ -93,7 +92,7 @@ function getTextSuffix(document: vscode.TextDocument, position: vscode.Position)
 	const rangeStart = position;
 	const rangeEnd = new vscode.Position(position.line + numLines, 0);
 	const text = document.getText(new vscode.Range(rangeStart, rangeEnd));
-	return text;
+	return text.trim();
 }
 
 async function generateSuggestions(text: string) {

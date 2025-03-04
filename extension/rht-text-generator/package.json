@@ -4,7 +4,7 @@
 	"publisher": "red-hat-training",
 	"description": "VSCode RHT extension for writting suggestions",
 	"repository": "https://github.com/RedHatTraining/ai-text-generation",
-	"version": "0.0.3",
+	"version": "0.1.1",
 	"engines": {
 		"vscode": "^1.55.0"
 	},
